@@ -2,7 +2,7 @@
 
 RealsenseCamera::RealsenseCamera()
 {
-
+    initialize();
 }
 
 void RealsenseCamera::initialize()
