@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>realsense_camera</name>
+  <version>0.0.0</version>
+  <description>The realsense_camera package</description>
+  <maintainer email="abepadalkar@gmail.com">Abhishek Padalkar</maintainer>
+  <license>TODO</license>
+  <author email="abepadalkar@gmail.com">Abhishek Padalkar</author>
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+</package>
