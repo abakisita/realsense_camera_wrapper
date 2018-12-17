@@ -12,10 +12,20 @@ typedef pcl::PointXYZRGB P_pcl;
 typedef pcl::PointCloud<P_pcl> point_cloud;
 typedef point_cloud::Ptr ptr_cloud;
 ptr_cloud point_cloud_;
+
+struct image_resolution
+{
+    uint16_t width, height;
+};
+namespace ImageResolution
+{
+    const image_resolution SD = {640, 480}, HD = {1280, 720}, FHD = {1920, 1080};
+}
+
 class RealsenseCamera 
 {
 public:
-    RealsenseCamera();
+    RealsenseCamera(const image_resolution &depth_image_resolution, const image_resolution &color_image_resolution);
     void initialize();
     float get_depth_scale(rs2::device dev);
     void get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud);
@@ -37,4 +47,5 @@ public:
     rs2_format color_format_;
     bool swap_rgb_;
     uint16_t nb_color_pixel_;
+    const uint16_t supported_frame_rates[2] = {15, 30};
 };

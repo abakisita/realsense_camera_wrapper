@@ -1,21 +1,19 @@
 #include "realsense_camera.h"
 
-RealsenseCamera::RealsenseCamera()
+RealsenseCamera::RealsenseCamera(const image_resolution &depth_image_resolution, const image_resolution &color_image_resolution)
 {
+    rs2::config cfg;
+    // set configuration 
+    cfg.enable_stream(RS2_STREAM_DEPTH, depth_image_resolution.width, depth_image_resolution.height, RS2_FORMAT_Z16, 30);
+    cfg.enable_stream(RS2_STREAM_COLOR, color_image_resolution.width, color_image_resolution.height, RS2_FORMAT_RGB8, 30);
+
+    p_profile_ = pipe_.start(cfg);
+    is_initialized_ = true;
     initialize();
 }
 
 void RealsenseCamera::initialize()
 {
-    rs2::config cfg;
-    // set configuration 
-    cfg.enable_stream(RS2_STREAM_DEPTH, 1280, 720, RS2_FORMAT_Z16, 30);
-    // cfg.enable_stream(RS2_STREAM_COLOR, 1280, 720, RS2_FORMAT_RGB8, 30);
-    // cfg.enable_stream(RS2_STREAM_DEPTH, 1920, 1080, RS2_FORMAT_Z16, 30);
-    cfg.enable_stream(RS2_STREAM_COLOR, 1920, 1080, RS2_FORMAT_RGB8, 30);
-
-    p_profile_ = pipe_.start(cfg);
-    is_initialized_ = true;
     m_depth_scale_ = get_depth_scale(p_profile_.get_device());
     stream_c_ = p_profile_.get_stream(RS2_STREAM_COLOR);
     vsc_ = new rs2::video_stream_profile(stream_c_.as<rs2::video_stream_profile>());
