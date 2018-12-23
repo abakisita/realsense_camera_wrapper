@@ -6,7 +6,7 @@
 int main(int argc, char *argv[]) 
 {
 
-    RealsenseCamera device(ImageResolution::HD, ImageResolution::HD);
+    RealsenseCamera device(ImageResolution::SD, ImageResolution::SD);
     ros::init(argc, argv, "example_node_1");
     ros::NodeHandle nh_;
     pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");

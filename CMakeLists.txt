@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(realsense_camera)
+project(realsense_camera_wrapper)
 
 add_compile_options(-std=c++11
                     -O3
@@ -21,7 +21,7 @@ catkin_package(
 )
 ## Specify additional locations of header files
 include_directories(
-  include/realsense_camera
+  include/realsense_camera_wrapper
   ${realsense2_INCLUDE_DIRS}
   ${PCL_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
