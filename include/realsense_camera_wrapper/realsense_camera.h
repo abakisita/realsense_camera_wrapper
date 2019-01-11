@@ -7,6 +7,7 @@
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/visualization/cloud_viewer.h>
+#include <chrono>
 
 typedef pcl::PointXYZRGB P_pcl;
 typedef pcl::PointCloud<P_pcl> point_cloud;
@@ -28,7 +29,7 @@ public:
     RealsenseCamera(const image_resolution &depth_image_resolution, const image_resolution &color_image_resolution);
     void initialize();
     float get_depth_scale(rs2::device dev);
-    void get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud);
+    void get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud, std::chrono::milliseconds::rep &time_stamp);
     rs2::pipeline pipe_;
     rs2::pipeline_profile p_profile_;
     float m_invalid_depth_value_ = 0.0;

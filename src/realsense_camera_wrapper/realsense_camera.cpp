@@ -44,11 +44,14 @@ float RealsenseCamera::get_depth_scale(rs2::device dev)
     throw std::runtime_error("Device does not have a depth sensor");
 }
 
-void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud)
+void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud, std::chrono::milliseconds::rep &time_stamp)
 {
+
     rs2::frameset frames = pipe_.wait_for_frames();
     const rs2::frame &color_frame = frames.get_color_frame();
     const rs2::frame &depth_frame = frames.get_depth_frame();
+    time_stamp = 
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     rs2::video_frame vf = depth_frame.as<rs2::video_frame>();
     const int width = vf.get_width();
     const int height = vf.get_height();

@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
         ptr_cloud cloud_new(new point_cloud);
         // device->get_data(cloud, color, depth);
         t_start = ros::Time::now().toSec();   
-        device.get_pointcloud(cloud_new);
+        std::chrono::milliseconds::rep time_stamp;
+        device.get_pointcloud(cloud_new, time_stamp);
         t_end = ros::Time::now().toSec();   
         ROS_WARN_STREAM("time required for calculating point cloud " << (t_end - t_start));
         ros::Rate r(30);
