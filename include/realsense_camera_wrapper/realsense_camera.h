@@ -1,3 +1,6 @@
+#ifndef REALSENSE_CAMERA_H
+#define REALSENSE_CAMERA_H
+
 #include <iostream>
 #include <librealsense2/rs.hpp>
 #include <librealsense2/rsutil.h>
@@ -12,21 +15,22 @@
 typedef pcl::PointXYZRGB P_pcl;
 typedef pcl::PointCloud<P_pcl> point_cloud;
 typedef point_cloud::Ptr ptr_cloud;
-ptr_cloud point_cloud_;
+//ptr_cloud point_cloud_;
 
 struct image_resolution
-{
-    uint16_t width, height;
-};
-namespace ImageResolution
-{
-    const image_resolution SD = {640, 480}, HD = {1280, 720}, FHD = {1920, 1080};
-}
+ {
+     uint16_t width, height;
+ };
+ namespace ImageResolution
+ {
+     const image_resolution SD = {640, 480}, HD = {1280, 720}, FHD = {1920, 1080};
+ }
 
 class RealsenseCamera 
 {
 public:
-    RealsenseCamera(const image_resolution &depth_image_resolution, const image_resolution &color_image_resolution);
+    //typedef std::auto_ptr<RealsenseCamera> Ptr;
+    RealsenseCamera(uint16_t width, uint16_t height);
     void initialize();
     float get_depth_scale(rs2::device dev);
     void get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud, std::chrono::milliseconds::rep &time_stamp);
@@ -49,4 +53,10 @@ public:
     bool swap_rgb_;
     uint16_t nb_color_pixel_;
     const uint16_t supported_frame_rates[2] = {15, 30};
+    uint16_t width;
+    uint16_t height;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_;
+
 };
+
+#endif  // REALSENSE_CAMERA_H

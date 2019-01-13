@@ -1,11 +1,13 @@
 #include "realsense_camera.h"
 
-RealsenseCamera::RealsenseCamera(const image_resolution &depth_image_resolution, const image_resolution &color_image_resolution)
+RealsenseCamera::RealsenseCamera(uint16_t width, uint16_t height)
 {
+    //width_ = width;
+    //height_ = height;
     rs2::config cfg;
     // set configuration 
-    cfg.enable_stream(RS2_STREAM_DEPTH, depth_image_resolution.width, depth_image_resolution.height, RS2_FORMAT_Z16, 30);
-    cfg.enable_stream(RS2_STREAM_COLOR, color_image_resolution.width, color_image_resolution.height, RS2_FORMAT_RGB8, 30);
+    cfg.enable_stream(RS2_STREAM_DEPTH, width, height, RS2_FORMAT_Z16, 30);
+    cfg.enable_stream(RS2_STREAM_COLOR, width, height, RS2_FORMAT_RGB8, 30);
 
     p_profile_ = pipe_.start(cfg);
     is_initialized_ = true;
