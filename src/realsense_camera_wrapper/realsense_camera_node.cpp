@@ -6,12 +6,12 @@
 int main(int argc, char *argv[]) 
 {
 
-    RealsenseCamera device(ImageResolution::SD, ImageResolution::SD);
+    RealsenseCamera device(480, 640);
     ros::init(argc, argv, "example_node_1");
     ros::NodeHandle nh_;
     pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
-    ptr_cloud cloud;
-    ptr_cloud cloud_new;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_new (new pcl::PointCloud<pcl::PointXYZRGB>);
     rs2::frame color;
     rs2::frame depth; 
     double t_start;
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
     while (nh_.ok())
     {
-        ptr_cloud cloud_new(new point_cloud);
+        //ptr_cloud cloud_new(new point_cloud);
         // device->get_data(cloud, color, depth);
         t_start = ros::Time::now().toSec();   
         device.get_pointcloud(cloud_new);
