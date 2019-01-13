@@ -16,8 +16,13 @@ find_package(PCL 1.6 REQUIRED)
 find_package(realsense2 REQUIRED COMPONENTS)
 find_package(OpenCV REQUIRED COMPONENTS)
 find_package(Boost REQUIRED COMPONENTS)
-catkin_package(
 
+# Let other packages load this library
+catkin_package(
+   INCLUDE_DIRS
+     include
+    LIBRARIES
+      realsense_camera_wrapper
 )
 ## Specify additional locations of header files
 include_directories(
