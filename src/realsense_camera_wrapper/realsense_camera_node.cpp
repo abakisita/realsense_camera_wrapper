@@ -5,7 +5,7 @@
 
 RealsenseCameraRos::RealsenseCameraRos()
 {
-    device = std::make_shared<RealsenseCamera>(ImageResolution::SD, ImageResolution::SD);
+    device = std::make_shared<RealsenseCamera>(480, 640);
 }
 
 int main(int argc, char *argv[]) 
