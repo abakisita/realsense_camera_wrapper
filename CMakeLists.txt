@@ -44,7 +44,6 @@ add_library(${PROJECT_NAME}
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/${PROJECT_NAME}/realsense_camera_node.cpp)
 
-add_executable(${PROJECT_NAME}_node_2 src/${PROJECT_NAME}/realsense_camera_node_2.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -65,17 +64,6 @@ target_link_libraries(${PROJECT_NAME}_node -lrt
   ${catkin_LIBRARIES}
   ${PCL_LIBRARIES}
   ${Boost_LIBRARIES}
-  ${PROJECT_NAME}
-  ${ZeroMQ_LIBRARY}
- )
- target_link_libraries(${PROJECT_NAME}_node_2 -lrt
-  ${realsense2_LIBRARIES}
-  librealsense2.so
-  libzmq.so
-  ${OpenCV_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${catkin_LIBRARIES}
-  ${PCL_LIBRARIES}
   ${PROJECT_NAME}
   ${ZeroMQ_LIBRARY}
  )

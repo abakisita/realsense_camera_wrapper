@@ -1,7 +1,12 @@
-#include "realsense_camera_device_wrapper.h"
 #include <librealsense2/rs.hpp>
 #include <ros/ros.h>
 #include <iostream>
+#include <realsense_camera_ros.h>
+
+RealsenseCameraRos::RealsenseCameraRos()
+{
+    device = std::make_shared<RealsenseCamera>(ImageResolution::SD, ImageResolution::SD);
+}
 
 int main(int argc, char *argv[]) 
 {
