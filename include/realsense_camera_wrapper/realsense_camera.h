@@ -33,7 +33,7 @@ public:
     RealsenseCamera(uint16_t width, uint16_t height);
     void initialize();
     float get_depth_scale(rs2::device dev);
-    void get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud, std::chrono::milliseconds::rep &time_stamp);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr get_pointcloud(std::chrono::milliseconds::rep &time_stamp);
     rs2::pipeline pipe_;
     rs2::pipeline_profile p_profile_;
     float m_invalid_depth_value_ = 0.0;
@@ -55,8 +55,9 @@ public:
     const uint16_t supported_frame_rates[2] = {15, 30};
     uint16_t width;
     uint16_t height;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_;
 
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointcloud_;
+    
 };
 
 #endif  // REALSENSE_CAMERA_H
