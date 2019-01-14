@@ -2,8 +2,6 @@
 
 RealsenseCamera::RealsenseCamera(uint16_t width, uint16_t height)
 {
-    //width_ = width;
-    //height_ = height;
     rs2::config cfg;
     // set configuration 
     cfg.enable_stream(RS2_STREAM_DEPTH, width, height, RS2_FORMAT_Z16, 30);
@@ -11,6 +9,9 @@ RealsenseCamera::RealsenseCamera(uint16_t width, uint16_t height)
 
     p_profile_ = pipe_.start(cfg);
     is_initialized_ = true;
+
+    pointcloud_ = pcl::PointCloud<pcl::PointXYZRGB>::Ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
+
     initialize();
 }
 
@@ -46,9 +47,8 @@ float RealsenseCamera::get_depth_scale(rs2::device dev)
     throw std::runtime_error("Device does not have a depth sensor");
 }
 
-void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pointcloud, std::chrono::milliseconds::rep &time_stamp)
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr RealsenseCamera::get_pointcloud(std::chrono::milliseconds::rep &time_stamp)
 {
-
     rs2::frameset frames = pipe_.wait_for_frames();
     const rs2::frame &color_frame = frames.get_color_frame();
     const rs2::frame &depth_frame = frames.get_depth_frame();
@@ -57,9 +57,9 @@ void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &poi
     rs2::video_frame vf = depth_frame.as<rs2::video_frame>();
     const int width = vf.get_width();
     const int height = vf.get_height();
-    pointcloud->width = (uint32_t)width;
-    pointcloud->height = (uint32_t)height;
-    pointcloud->resize((size_t)(width * height));
+    pointcloud_->width = (uint32_t)width;
+    pointcloud_->height = (uint32_t)height;
+    pointcloud_->resize((size_t)(width * height));
     const uint16_t *p_depth_frame = reinterpret_cast<const uint16_t *>(depth_frame.get_data());
     const unsigned char *p_color_frame = reinterpret_cast<const unsigned char *>(color_frame.get_data());
     for (int i = 0; i < height; i++)
@@ -69,9 +69,9 @@ void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &poi
         {
             if (p_depth_frame[depth_pixel_index] == 0)
             {
-                pointcloud->points[(size_t)depth_pixel_index].x = m_invalid_depth_value_;
-                pointcloud->points[(size_t)depth_pixel_index].y = m_invalid_depth_value_;
-                pointcloud->points[(size_t)depth_pixel_index].z = m_invalid_depth_value_;
+                pointcloud_->points[(size_t)depth_pixel_index].x = m_invalid_depth_value_;
+                pointcloud_->points[(size_t)depth_pixel_index].y = m_invalid_depth_value_;
+                pointcloud_->points[(size_t)depth_pixel_index].z = m_invalid_depth_value_;
             }
 
             // Get the depth value of the current pixel
@@ -82,9 +82,9 @@ void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &poi
             if (pixels_distance > m_max_z_)
                 depth_point[0] = depth_point[1] = depth_point[2] = m_invalid_depth_value_;
 
-            pointcloud->points[(size_t)depth_pixel_index].x = depth_point[0];
-            pointcloud->points[(size_t)depth_pixel_index].y = depth_point[1];
-            pointcloud->points[(size_t)depth_pixel_index].z = depth_point[2];
+            pointcloud_->points[(size_t)depth_pixel_index].x = depth_point[0];
+            pointcloud_->points[(size_t)depth_pixel_index].y = depth_point[1];
+            pointcloud_->points[(size_t)depth_pixel_index].z = depth_point[2];
 
             float color_point[3];
             rs2_transform_point_to_point(color_point, &m_depth_2_color_extrinsics_, depth_point);
@@ -93,9 +93,9 @@ void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &poi
 
             if (color_pixel[1] < 0 || color_pixel[1] >= color_height_ || color_pixel[0] < 0 || color_pixel[0] >= color_width_)
             {
-                pointcloud->points[(size_t)depth_pixel_index].x = m_invalid_depth_value_;
-                pointcloud->points[(size_t)depth_pixel_index].y = m_invalid_depth_value_;
-                pointcloud->points[(size_t)depth_pixel_index].z = m_invalid_depth_value_;
+                pointcloud_->points[(size_t)depth_pixel_index].x = m_invalid_depth_value_;
+                pointcloud_->points[(size_t)depth_pixel_index].y = m_invalid_depth_value_;
+                pointcloud_->points[(size_t)depth_pixel_index].z = m_invalid_depth_value_;
             }
             else
             {
@@ -103,24 +103,25 @@ void RealsenseCamera::get_pointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &poi
                 unsigned int j_ = (unsigned int)color_pixel[0];
                 if (swap_rgb_)
                 {
-                    pointcloud->points[(size_t)depth_pixel_index].b =
+                    pointcloud_->points[(size_t)depth_pixel_index].b =
                         (uint32_t)p_color_frame[(i_ * (unsigned int)color_width_ + j_) * nb_color_pixel_];
-                    pointcloud->points[(size_t)depth_pixel_index].g =
+                    pointcloud_->points[(size_t)depth_pixel_index].g =
                         (uint32_t)p_color_frame[(i_ * (unsigned int)color_width_ + j_) * nb_color_pixel_ + 1];
-                    pointcloud->points[(size_t)depth_pixel_index].r =
+                    pointcloud_->points[(size_t)depth_pixel_index].r =
                         (uint32_t)p_color_frame[(i_ * (unsigned int)color_width_ + j_) * nb_color_pixel_ + 2];
                 }
                 else
                 {
-                    pointcloud->points[(size_t)depth_pixel_index].r =
+                    pointcloud_->points[(size_t)depth_pixel_index].r =
                         (uint32_t)p_color_frame[(i_ * (unsigned int)color_width_ + j_) * nb_color_pixel_];
-                    pointcloud->points[(size_t)depth_pixel_index].g =
+                    pointcloud_->points[(size_t)depth_pixel_index].g =
                         (uint32_t)p_color_frame[(i_ * (unsigned int)color_width_ + j_) * nb_color_pixel_ + 1];
-                    pointcloud->points[(size_t)depth_pixel_index].b =
+                    pointcloud_->points[(size_t)depth_pixel_index].b =
                         (uint32_t)p_color_frame[(i_ * (unsigned int)color_width_ + j_) * nb_color_pixel_ + 2];
                 }
 
             }
         }
     }
+    return pointcloud_;
 }
